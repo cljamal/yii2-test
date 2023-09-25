@@ -1,0 +1,58 @@
+<?php
+
+namespace app\api\modules\Api\models\v1;
+
+use Yii;
+use \yii\db\ActiveRecord;
+/**
+ * This is the model class for table "customers".
+ *
+ * @property int $id
+ * @property string|null $first_name
+ * @property string|null $last_name
+ * @property string|null $dob
+ * @property string $email
+ */
+class Customer extends ActiveRecord
+{
+    /**
+     * {@inheritdoc}
+     */
+    public static function tableName()
+    {
+        return 'customers';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function rules()
+    {
+        return [
+            [['dob'], 'safe'],
+            [['email'], 'required'],
+            [['first_name', 'last_name', 'email'], 'string', 'max' => 255],
+            [['email'], 'unique'],
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function attributeLabels()
+    {
+        return [
+            'id' => 'ID',
+            'first_name' => 'First Name',
+            'last_name' => 'Last Name',
+            'dob' => 'Dob',
+            'email' => 'Email',
+            'orders' => 'Заказы',
+        ];
+    }
+
+    public function getOrders()
+    {
+        return $this->hasMany(Order::class,  ['customer_id' => 'id']);
+    }
+}

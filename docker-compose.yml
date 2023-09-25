@@ -1,0 +1,46 @@
+version: '3'
+services:
+  webserver:
+    container_name: ${PHP_CONTAINER_NAME}
+    hostname: ${PHP_CONTAINER_NAME}
+    restart: unless-stopped
+    build: ${PHP_PATH}/webserver
+    volumes:
+      - ${SITES_PATH}:/var/www
+      - ${PHP_PATH}/webserver/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ${PHP_PATH}/webserver/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ${PHP_PATH}/webserver/php/php.ini:/etc/php81/conf.d/settings.ini
+      - ${PHP_PATH}/webserver/php/www.conf:/etc/php8/php-fpm.d/www.conf
+      - ${STORAGE_ROOT_PATH}/PHP/nginx:/var/log/nginx
+      - ${STORAGE_ROOT_PATH}/PHP/php81:/var/log/php81
+    working_dir: /var/www
+    ports:
+      - 8080:8080
+
+  mysql:
+    image: mysql:8.1
+    container_name: ${MYSQL_CONTAINER_NAME}
+    hostname: ${MYSQL_CONTAINER_NAME}
+    restart: unless-stopped
+    volumes:
+      - ${STORAGE_ROOT_PATH}/MySQL:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: eDao2u
+
+  adminer:
+    image: adminer:latest    
+    container_name: DB_ADMINER
+    hostname: DB_ADMINER
+    restart: unless-stopped
+    environment:
+      ADMINER_DEFAULT_SERVER: ${MYSQL_CONTAINER_NAME}
+    ports:
+      - 8090:8080
+
+  redis:
+    image: redis:latest    
+    container_name: DB_REDIS
+    hostname: DB_REDIS
+    restart: unless-stopped
+    volumes:
+      - ${STORAGE_ROOT_PATH}/Redis:/data
