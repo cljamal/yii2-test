@@ -103,7 +103,8 @@ class CustomersRepository
                 'status' => true,
                 'data' => [
                     ...$model,
-                    'orders' => $model->orders
+                    'orders' => $model->orders,
+                    'products' => $model->products
                 ]
             ];
         }

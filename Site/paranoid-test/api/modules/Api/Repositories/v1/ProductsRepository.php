@@ -149,6 +149,27 @@ class ProductsRepository
         ];
     }
 
+    public function getManyById($info): array
+    {
+        if (!is_array($info) || !count($info))
+            return [];
+
+        $result = [];
+        $product_ids = array_keys($info);
+
+        $products = $this->model()::find()->where(['in', 'id', $product_ids])->all();
+
+        foreach ($products as $product)
+        {
+            $result[] = [
+                ...$product->toArray(),
+                'requested_qty' => $info[$product->id]['qty']
+            ];
+        }
+        
+        return $result;
+    }
+
     public function create(Request $request): array
     {
         $this->model()->load($this->preparePostData($request->post()), '');

@@ -2,6 +2,7 @@
 
 namespace app\api\modules\Api\models\v1;
 
+use app\api\modules\Api\Repositories\v1\ProductsRepository;
 use Yii;
 use \yii\db\ActiveRecord;
 /**
@@ -54,5 +55,18 @@ class Customer extends ActiveRecord
     public function getOrders()
     {
         return $this->hasMany(Order::class,  ['customer_id' => 'id']);
+    }
+
+    public function getProducts()
+    {
+        $products = [];
+        foreach ($this->orders as $order)
+            foreach ($order->order_info as $info)
+            $products[$info['product_id']] = [
+                'id' => $info['product_id'],
+                'qty' => ($products[$info['product_id']]['qty'] ?? 0) + $info['qty']
+            ];
+
+        return (new ProductsRepository)->getManyById($products);
     }
 }
