@@ -44,3 +44,22 @@ services:
     restart: unless-stopped
     volumes:
       - ${STORAGE_ROOT_PATH}/Redis:/data
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: always
+    ports:
+      - 9000:9000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${STORAGE_ROOT_PATH}/portainer/data:/data
+  node:
+    container_name: NODEJS_SERVER
+    build: ${NODEJS_PATH}
+    restart: unless-stopped
+    volumes:
+      - ${SITES_PATH}:/var/www
+    tty: true
+    working_dir: /var/www
+    ports:
+      - 3000:3000
